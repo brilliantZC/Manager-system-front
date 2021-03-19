@@ -3,13 +3,11 @@
     <el-card>
         <div id="J_chartBarBox" class="chart-box"></div>
     </el-card>
+    <p></p>
     <el-card>
-        <div id="J_chartPieBox" class="chart-box"></div>
+        <div id="J_chartPieBox2" class="chart-box"></div>
     </el-card>
-    <span>{{this.gcname[0]}}{{this.gcname[1]}}</span>
-    <span>{{this.gcnum[0]}}</span>
 </div>
-
 </template>
 
 <script>
@@ -30,8 +28,7 @@
         dataListSelections: [],
         addOrUpdateVisible: false,
         gcname: [],
-        gcnum: [],
-        nd1: ''
+        gcnum: []
       }
     },
     mounted () {
@@ -118,7 +115,7 @@
       initChartPie () {
         this.$nextTick(() => {
           this.$http({
-            url: this.$http.adornUrl('/goods_category/goodscate/tblist'),
+            url: this.$http.adornUrl('/goods_category/goodscate/tblist1'),
             method: 'get',
             params: this.$http.adornParams({})
           }).then(({ data }) => {
@@ -154,7 +151,8 @@
                 }
               ]
             }
-            this.chartBar = echarts.init(document.getElementById('J_chartPieBox'))
+            console.log(data.gcname)
+            this.chartBar = echarts.init(document.getElementById('J_chartPieBox2'))
             this.chartBar.setOption(option)
             window.addEventListener('resize', () => {
               this.chartBar.resize()

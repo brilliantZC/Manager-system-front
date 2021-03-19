@@ -6,6 +6,7 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
+        <el-button v-if="isAuth('bill_manage:excel')" type="primary" @click="downloadHandle()">导出</el-button>
         <el-button v-if="isAuth('bill_manage:daybill:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
@@ -218,6 +219,32 @@
       showEnd () {
         this.showvisible = false
         this.getDataList()
+      },
+     // 导出走后台方法
+      downloadHandle () {
+        this.$http({
+          url: this.$http.adornUrl('/bill_manage/excel/daybill'),
+          method: 'post',
+          responseType: 'arraybuffer',
+          params: this.$http.adornParams({fileName: '日收支信息表.xls'})
+        })
+        .then(({data}) => {
+          if (data) {
+            const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8' })
+            let fileName = '日收支信息表.xls'
+            if ('download' in document.createElement('a')) {
+              let objectUrl = URL.createObjectURL(blob)
+              let downEle = document.createElement('a')
+              downEle.href = objectUrl
+              downEle.setAttribute('download', fileName)
+              document.body.appendChild(downEle)
+              downEle.click()
+            } else {
+              navigator.msSaveBlob(blob, fileName)
+            }
+            this.getDataList()
+          }
+        })
       },
       // 删除
       deleteHandle (id) {
