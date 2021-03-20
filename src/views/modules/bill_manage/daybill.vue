@@ -1,79 +1,108 @@
 <template>
   <div class="mod-config">
-    <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
-      <el-form-item>
-        <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('bill_manage:excel')" type="primary" @click="downloadHandle()">导出</el-button>
-        <el-button v-if="isAuth('bill_manage:daybill:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
-      </el-form-item>
-    </el-form>
-    <el-table
-      :data="dataList"
-      border
-      v-loading="dataListLoading"
-      @selection-change="selectionChangeHandle"
-      style="width: 100%;">
-      <el-table-column
-        type="selection"
-        header-align="center"
-        align="center"
-        width="50">
-      </el-table-column>
-      <el-table-column
-        prop="dayBillid"
-        header-align="center"
-        align="center"
-        label="日期">
-      </el-table-column>
-      <el-table-column
-        prop="dayWeek"
-        header-align="center"
-        align="center"
-        label="星期">
-      </el-table-column>
-      <el-table-column
-        prop="dayIncome"
-        header-align="center"
-        align="center"
-        label="收入">
-      </el-table-column>
-      <el-table-column
-        prop="dayOutcome"
-        header-align="center"
-        align="center"
-        label="支出">
-      </el-table-column>
-      <el-table-column
-        prop="dayPure"
-        header-align="center"
-        align="center"
-        label="纯收入">
-      </el-table-column>
-      <el-table-column
-        fixed="right"
-        header-align="center"
-        align="center"
-        width="150"
-        label="操作">
-        <template slot-scope="scope">
-          <el-button type="text" size="small" @click="showDayBill(scope.row.dayBillid)">详情</el-button>
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-pagination
-      @size-change="sizeChangeHandle"
-      @current-change="currentChangeHandle"
-      :current-page="pageIndex"
-      :page-sizes="[10, 20, 50, 100]"
-      :page-size="pageSize"
-      :total="totalPage"
-      layout="total, sizes, prev, pager, next, jumper">
-    </el-pagination>
+    <el-tabs v-model="activeName" @tab-click="handleClick" type="card"> 
+      <el-tab-pane label="日收支表" name="first" lazy>
+        <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
+          <el-form-item>
+            <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button @click="getDataList()">查询</el-button>
+            <el-button v-if="isAuth('bill_manage:excel')" type="primary" @click="downloadHandle()">导出</el-button>
+            <el-button v-if="isAuth('bill_manage:daybill:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+          </el-form-item>
+        </el-form>
+        <el-table
+          :data="dataList"
+          border
+          v-loading="dataListLoading"
+          @selection-change="selectionChangeHandle"
+          style="width: 100%;border-bottom: 1px solid rgba(30, 23, 32, 0.38);border-top: 1px solid rgba(30, 23, 32, 0.38);border-left: 1px solid rgba(30, 23, 32, 0.38);">
+          <el-table-column
+            type="selection"
+            header-align="center"
+            align="center"
+            width="50">
+          </el-table-column>
+          <el-table-column 
+            header-align="center" 
+            align="center" 
+            width="60" 
+            type="index" 
+            label="序号">
+          </el-table-column>
+          <el-table-column
+            prop="dayBillid"
+            header-align="center"
+            align="center"
+            label="日期">
+          </el-table-column>
+          <el-table-column
+            prop="dayWeek"
+            header-align="center"
+            align="center"
+            label="星期">
+          </el-table-column>
+          <el-table-column
+            prop="dayIncome"
+            header-align="center"
+            align="center"
+            label="收入">
+          </el-table-column>
+          <el-table-column
+            prop="dayOutcome"
+            header-align="center"
+            align="center"
+            label="支出">
+          </el-table-column>
+          <el-table-column
+            prop="dayPure"
+            header-align="center"
+            align="center"
+            label="纯收入">
+          </el-table-column>
+          <el-table-column
+            fixed="right"
+            header-align="center"
+            align="center"
+            width="150"
+            label="操作">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" @click="showDayBill(scope.row.dayBillid)">详情</el-button>
+              <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
+              <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>  
+        <el-pagination
+          @size-change="sizeChangeHandle"
+          @current-change="currentChangeHandle"
+          :current-page="pageIndex"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="pageSize"
+          :total="totalPage"
+          layout="total, sizes, prev, pager, next, jumper">
+        </el-pagination>
+      </el-tab-pane>
+    <el-tab-pane label="日收支图" name="second" lazy>
+      <el-card>
+        <el-form :inline="true" >
+          <el-form-item label="日期" prop="value">
+            <el-date-picker v-model="value" align="right" type="date" placeholder="选择日期" value-format="yyyyMMdd" format="yyyyMMdd" clearable>
+          </el-date-picker>
+          </el-form-item>
+        <el-form-item>
+          <el-button @click="initChartPie()">查询</el-button>
+        </el-form-item>
+        </el-form>
+          <div id="J_chartPieBox" style="width:1000px; height:500px" class="chart-box"></div>
+        </el-card>
+        <p></p>
+        <el-card>
+           <div id="J_chartBarBox" style="width:1000px; height:500px" class="chart-box"></div>
+        </el-card>
+    </el-tab-pane>
+    </el-tabs>
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
 
@@ -117,6 +146,7 @@
 
 <script>
   import AddOrUpdate from './daybill-add-or-update'
+  import echarts from 'echarts'
   export default {
     data () {
       return {
@@ -135,14 +165,30 @@
         dataListLoading: false,
         dataListSelections: [],
         addOrUpdateVisible: false,
-        showvisible: false
+        showvisible: false,
+        activeName: 'first',
+        value: '',
+        chartPie: null,
+        charbar: null,
+        mname: [],
+        mnum: [],
+        zname: [],
+        znum: []
       }
     },
     components: {
       AddOrUpdate
     },
     activated () {
+      if (this.chartBar) {
+        this.chartBar.resize()
+      }
+      if (this.chartPie) {
+        this.chartPie.resize()
+      }
       this.getDataList()
+      this.initChartBar()
+      this.initChartPie()
     },
     methods: {
       // 获取数据列表
@@ -166,6 +212,12 @@
           }
           this.dataListLoading = false
         })
+      },
+      handleClick (tab, event) {
+        switch (tab.name) {
+          case 'first': this.getDataList(); break
+          case 'second': this.initChartBar(); break
+        }
       },
       // 每页数
       sizeChangeHandle (val) {
@@ -246,6 +298,119 @@
           }
         })
       },
+      initChartPie () {
+        this.$nextTick(() => {
+          this.$http({
+            url: this.$http.adornUrl('/bill_manage/daybill/countinout'),
+            method: 'get',
+            params: this.$http.adornParams({billdate: this.value})
+          }).then(({ data }) => {
+            var option = {
+              title: {
+                text: data.billdate + '收支图',
+                // subtext: '纯属虚构',
+                x: 'center'
+              },
+              tooltip: {
+                trigger: 'item',
+                formatter: '{a} <br/>{b} : {c} ({d}%)'
+              },
+              legend: {
+                orient: 'vertical',
+                left: 'left',
+                data: data.mname
+              },
+              series: [
+                {
+                  name: '金额',
+                  type: 'pie',
+                  radius: '55%',
+                  center: ['50%', '60%'],
+                  data: data.mnum,
+                  itemStyle: {
+                    emphasis: {
+                      shadowBlur: 10,
+                      shadowOffsetX: 0,
+                      shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                  }
+                }
+              ]
+            }
+            this.chartBar = echarts.init(document.getElementById('J_chartPieBox'))
+            this.chartBar.setOption(option)
+            window.addEventListener('resize', () => {
+              this.chartBar.resize()
+            })
+          })
+        })
+      },
+       // 柱状图
+      initChartBar () {
+        this.$nextTick(() => {
+          this.$http({
+            url: this.$http.adornUrl('/bill_manage/daybill/daybilllist'),
+            method: 'get',
+            params: this.$http.adornParams({})
+          }).then(({ data }) => {
+            var option = {
+              title: {
+                text: '日盈利柱状图',
+                left: 'center'
+              },
+              tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                  type: 'shadow'
+                }
+              },
+              grid: {
+                bottom: 90
+              },
+              dataZoom: [{
+                type: 'inside'
+              }, {
+                type: 'slider'
+              }],
+              xAxis: {
+                data: data.zname,
+                silent: false,
+                splitLine: {
+                  show: false
+                },
+                splitArea: {
+                  show: false
+                },
+                axisLabel: {
+                  interval: 0,
+                  rotate: 20, // 20度角倾斜显示(***这里是关键)
+                  textStyle: {
+                    color: '#000000'
+                  }
+                }
+              },
+              yAxis: {
+                splitArea: {
+                  show: false
+                }
+              },
+              series: [{
+                type: 'bar',
+                data: data.znum,
+                // Set `large` for large data amount
+                large: true,
+                // 柱图宽度
+                barWidth: 40
+              }]
+            }
+            this.chartBar = echarts.init(document.getElementById('J_chartBarBox'))
+            this.chartBar.setOption(option)
+            window.addEventListener('resize', () => {
+              this.chartBar.resize()
+            })
+          })
+        })
+      },
       // 删除
       deleteHandle (id) {
         var ids = id ? [id] : this.dataListSelections.map(item => {
@@ -279,3 +444,16 @@
     }
   }
 </script>
+<style lang="css" scoped>
+/*加粗table线条 */
+ .el-table >>> td{
+     border-bottom:  1px solid rgba(30, 23, 32, 0.38);
+     border-right:  1px solid rgba(30, 23, 32, 0.38);
+  }
+  .el-table >>> th{
+    background-color: rgb(241, 243, 243);
+    color: rgb(48, 47, 47);
+    border-bottom:  1px solid rgba(30, 23, 32, 0.38);
+    border-right:  1px solid rgba(30, 23, 32, 0.38);
+  }
+</style>
