@@ -15,7 +15,7 @@
       border
       v-loading="dataListLoading"
       @selection-change="selectionChangeHandle"
-      style="width: 100%;">
+      style="width: 100%;border-bottom:1px solid rgba(30, 23, 32, 0.38);border-top:1px solid rgba(30, 23, 32, 0.38);border-left:1px solid rgba(30, 23, 32, 0.38);">
       <el-table-column
         type="selection"
         header-align="center"
@@ -26,8 +26,10 @@
         prop="id"
         header-align="center"
         align="center"
-        label="主键">
+        label="主键"
+        v-if="false">
       </el-table-column>
+      <el-table-column header-align="center" align="center" width="70" type="index" label="序号"></el-table-column>
       <el-table-column
         prop="name"
         header-align="center"
@@ -38,13 +40,15 @@
         prop="phone"
         header-align="center"
         align="center"
-        label="手机号">
+        label="手机号"
+        v-if="false">
       </el-table-column>
       <el-table-column
         prop="address"
         header-align="center"
         align="center"
-        label="地址">
+        label="地址"
+        v-if="false">
       </el-table-column>
       <el-table-column
         prop="materialName"
@@ -68,19 +72,22 @@
         prop="intro"
         header-align="center"
         align="center"
-        label="简介">
+        label="简介"
+        v-if="false">
       </el-table-column>
       <el-table-column
         prop="ztdm"
         header-align="center"
         align="center"
-        label="状态代码">
+        label="状态代码"
+        v-if="false">
       </el-table-column>
       <el-table-column
         prop="ztmc"
         header-align="center"
         align="center"
-        label="状态名称">
+        label="状态名称"
+        v-if="false">
       </el-table-column>
       <el-table-column
         prop="ksri"
@@ -98,13 +105,15 @@
         prop="wjdz"
         header-align="center"
         align="center"
-        label="文件地址">
+        label="文件地址"
+        v-if="false">
       </el-table-column>
       <el-table-column
         prop="wjmc"
         header-align="center"
         align="center"
-        label="文件名称">
+        label="文件名称"
+        v-if="false">
       </el-table-column>
       <el-table-column
         prop="shfs"
@@ -116,13 +125,15 @@
         prop="wjlxmc"
         header-align="center"
         align="center"
-        label="文件类型名称">
+        label="文件类型名称"
+        v-if="false">
       </el-table-column>
       <el-table-column
         prop="wjlxdm"
         header-align="center"
         align="center"
-        label="文件类型代码">
+        label="文件类型代码"
+        v-if="false">
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -131,8 +142,9 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
+          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">详情</el-button>
+          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">确认选购</el-button>
+          <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">确认供货完成</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -178,7 +190,7 @@
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/supply_manage/gywjb/list'),
+          url: this.$http.adornUrl('/supply_manage/gywjb/gylist'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
@@ -251,3 +263,16 @@
     }
   }
 </script>
+<style lang="css" scoped>
+/*加粗table线条 */
+ .el-table >>> td{
+     border-bottom:  1px solid rgba(30, 23, 32, 0.38);
+     border-right:  1px solid rgba(30, 23, 32, 0.38);
+  }
+  .el-table >>> th{
+    background-color: rgb(241, 243, 243);
+    color: rgb(48, 47, 47);
+    border-bottom:  1px solid rgba(30, 23, 32, 0.38);
+    border-right:  1px solid rgba(30, 23, 32, 0.38);
+  }
+</style>

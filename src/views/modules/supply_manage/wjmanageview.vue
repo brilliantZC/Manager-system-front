@@ -6,8 +6,8 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('supply_manage:wjlxb:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('supply_manage:wjlxb:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button v-if="isAuth('supply_manage:gywjb:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('supply_manage:gywjb:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -31,29 +31,109 @@
       </el-table-column>
       <el-table-column header-align="center" align="center" width="70" type="index" label="序号"></el-table-column>
       <el-table-column
-        prop="jdmc"
+        prop="name"
         header-align="center"
         align="center"
-        label="进度名称">
+        label="发布人">
       </el-table-column>
       <el-table-column
-        prop="jddm"
+        prop="phone"
         header-align="center"
         align="center"
-        label="进度代码"
+        label="手机号"
         v-if="false">
+      </el-table-column>
+      <el-table-column
+        prop="address"
+        header-align="center"
+        align="center"
+        label="地址"
+        v-if="false">
+      </el-table-column>
+      <el-table-column
+        prop="materialName"
+        header-align="center"
+        align="center"
+        label="材料名">
+      </el-table-column>
+      <el-table-column
+        prop="materialNum"
+        header-align="center"
+        align="center"
+        label="材料数量">
+      </el-table-column>
+      <el-table-column
+        prop="materialPrice"
+        header-align="center"
+        align="center"
+        label="材料价格">
+      </el-table-column>
+      <el-table-column
+        prop="intro"
+        header-align="center"
+        align="center"
+        label="简介"
+        v-if="false">
+      </el-table-column>
+      <el-table-column
+        prop="ztdm"
+        header-align="center"
+        align="center"
+        label="状态代码"
+        v-if="false">
+      </el-table-column>
+      <el-table-column
+        prop="ztmc"
+        header-align="center"
+        align="center"
+        label="状态名称"
+        v-if="false">
+      </el-table-column>
+      <el-table-column
+        prop="ksri"
+        header-align="center"
+        align="center"
+        label="开始日期">
+      </el-table-column>
+      <el-table-column
+        prop="jsrq"
+        header-align="center"
+        align="center"
+        label="结束日期">
+      </el-table-column>
+      <el-table-column
+        prop="wjdz"
+        header-align="center"
+        align="center"
+        label="文件地址"
+        v-if="false">
+      </el-table-column>
+      <el-table-column
+        prop="wjmc"
+        header-align="center"
+        align="center"
+        label="文件名称"
+        v-if="false">
+      </el-table-column>
+      <el-table-column
+        prop="shfs"
+        header-align="center"
+        align="center"
+        label="送货方式">
       </el-table-column>
       <el-table-column
         prop="wjlxmc"
         header-align="center"
         align="center"
-        label="类型名称">
+        label="文件类型名称"
+        v-if="false">
       </el-table-column>
       <el-table-column
         prop="wjlxdm"
         header-align="center"
         align="center"
-        label="类型代码">
+        label="文件类型代码"
+        v-if="false">
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -62,8 +142,9 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
+          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">详情</el-button>
+          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">选购</el-button>
+          <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">确认供货完成</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -82,7 +163,7 @@
 </template>
 
 <script>
-  import AddOrUpdate from './wjlxb-add-or-update'
+  import AddOrUpdate from './gywjb-add-or-update'
   export default {
     data () {
       return {
@@ -109,7 +190,7 @@
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/supply_manage/wjlxb/list'),
+          url: this.$http.adornUrl('/supply_manage/gywjb/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
@@ -160,7 +241,7 @@
           type: 'warning'
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl('/supply_manage/wjlxb/delete'),
+            url: this.$http.adornUrl('/supply_manage/gywjb/delete'),
             method: 'post',
             data: this.$http.adornData(ids, false)
           }).then(({data}) => {

@@ -6,7 +6,6 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('supply_manage:gyuser:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
         <el-button v-if="isAuth('supply_manage:gyuser:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
@@ -15,7 +14,7 @@
       border
       v-loading="dataListLoading"
       @selection-change="selectionChangeHandle"
-      style="width: 100%;">
+      style="width: 100%;border-bottom:1px solid rgba(30, 23, 32, 0.38);border-top:1px solid rgba(30, 23, 32, 0.38);border-left:1px solid rgba(30, 23, 32, 0.38);">
       <el-table-column
         type="selection"
         header-align="center"
@@ -26,37 +25,46 @@
         prop="id"
         header-align="center"
         align="center"
-        label="主键">
+        label="主键"
+        v-if="false">
+      </el-table-column>
+      <el-table-column 
+        header-align="center" 
+        align="center" 
+        width="70" 
+        type="index" 
+        label="序号">
       </el-table-column>
       <el-table-column
         prop="gyname"
         header-align="center"
         align="center"
-        label="">
+        label="供应商名">
       </el-table-column>
       <el-table-column
         prop="gyphone"
         header-align="center"
         align="center"
-        label="">
+        label="联系方式">
       </el-table-column>
       <el-table-column
         prop="gyaddress"
         header-align="center"
         align="center"
-        label="">
+        label="地址">
       </el-table-column>
       <el-table-column
         prop="gycount"
         header-align="center"
         align="center"
-        label="">
+        label="供应次数">
       </el-table-column>
       <el-table-column
         prop="flag"
         header-align="center"
         align="center"
-        label="">
+        label="供应标志"
+        v-if="false">
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -185,3 +193,17 @@
     }
   }
 </script>
+
+<style lang="css" scoped>
+/*加粗table线条 */
+ .el-table >>> td{
+     border-bottom:  1px solid rgba(30, 23, 32, 0.38);
+     border-right:  1px solid rgba(30, 23, 32, 0.38);
+  }
+  .el-table >>> th{
+    background-color: rgb(241, 243, 243);
+    color: rgb(48, 47, 47);
+    border-bottom:  1px solid rgba(30, 23, 32, 0.38);
+    border-right:  1px solid rgba(30, 23, 32, 0.38);
+  }
+</style>

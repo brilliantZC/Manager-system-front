@@ -4,19 +4,19 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
-    <el-form-item label="" prop="gyname">
+    <el-form-item label="供应商名" prop="gyname">
       <el-input v-model="dataForm.gyname" placeholder=""></el-input>
     </el-form-item>
-    <el-form-item label="" prop="gyphone">
+    <el-form-item label="联系方式" prop="gyphone">
       <el-input v-model="dataForm.gyphone" placeholder=""></el-input>
     </el-form-item>
-    <el-form-item label="" prop="gyaddress">
+    <el-form-item label="地址" prop="gyaddress">
       <el-input v-model="dataForm.gyaddress" placeholder=""></el-input>
     </el-form-item>
-    <el-form-item label="" prop="gycount">
+    <el-form-item label="交易次数" prop="gycount">
       <el-input v-model="dataForm.gycount" placeholder=""></el-input>
     </el-form-item>
-    <el-form-item label="" prop="flag">
+    <el-form-item label="供应标识" prop="flag">
       <el-input v-model="dataForm.flag" placeholder=""></el-input>
     </el-form-item>
     </el-form>
