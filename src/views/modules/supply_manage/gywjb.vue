@@ -142,9 +142,10 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">详情</el-button>
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">确认选购</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">确认供货完成</el-button>
+          <el-button type="text" size="small" @click="Gysdetail(scope.row.id)">详情</el-button>
+          <el-button type="text" size="small" @click="GhConfirm(scope.row.id)" :disabled="ghconfirm(scope.row.zztdm)">确认供货</el-button>
+          <el-button type="text" size="small" @click="GhSuccess(scope.row.id,scope.row.uid)" :disabled="ghsuccess(scope.row.zztdm)">上传供货单据</el-button>
+          <el-button type="text" size="small" :disabled="ghddsuccess(scope.row.zztdm)">完成交易</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -158,12 +159,27 @@
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
+    <el-dialog
+      title="提示"
+      :visible.sync="GysghVisible"
+      width="30%"
+      center>
+      <span>确认进行供货？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="GysghVisible = false">取 消</el-button>
+        <el-button type="primary" @click="qrghsubmit()">确 定</el-button>
+      </span>
+    </el-dialog>
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+    <gysdetail v-if="GysdetailVisible" ref="Gysdetail" @refreshDataList="getDataList"></gysdetail>
+    <gysbillsc v-if="GysbillscVisible" ref="Gysbillsc" @refreshDataList="getDataList"></gysbillsc>
   </div>
 </template>
 
 <script>
+  import Gysdetail from './gysdetail.vue'
   import AddOrUpdate from './gywjb-add-or-update'
+  import Gysbillsc from './ghsbillsc.vue'
   export default {
     data () {
       return {
@@ -176,11 +192,17 @@
         totalPage: 0,
         dataListLoading: false,
         dataListSelections: [],
-        addOrUpdateVisible: false
+        addOrUpdateVisible: false,
+        GysdetailVisible: false,
+        qrghid: 0,
+        GysghVisible: false,
+        GysbillscVisible: false
       }
     },
     components: {
-      AddOrUpdate
+      AddOrUpdate,
+      Gysdetail,
+      Gysbillsc
     },
     activated () {
       this.getDataList()
@@ -228,6 +250,72 @@
         this.addOrUpdateVisible = true
         this.$nextTick(() => {
           this.$refs.addOrUpdate.init(id)
+        })
+      },
+      // 供应商详情
+      Gysdetail (id) {
+        this.GysdetailVisible = true
+        this.$nextTick(() => {
+          this.$refs.Gysdetail.init(id)
+        })
+      },
+      // 确认供货 状态
+      ghconfirm (zztdm) {
+        if (zztdm === '3') {
+          return false
+        } else {
+          return true
+        }
+      },
+      ghddsuccess (zztdm) {
+        if (zztdm === '6') {
+          return false
+        } else {
+          return true
+        }
+      },
+      // 供应商确认供货
+      GhConfirm (id) {
+        this.qrghid = id
+        this.GysghVisible = true
+      },
+      qrghsubmit () {
+        this.$http({
+          url: this.$http.adornUrl(`/supply_manage/gywjb/qrinfo/${this.qrghid}`),
+          method: 'post',
+          data: this.$http.adornData({
+            'id': this.id
+          })
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '选购成功',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.GysghVisible = false
+                this.$emit('refreshDataList')
+              }
+            })
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+        this.getDataList()
+      },
+      // 上传供货单据状态
+      ghsuccess (zztdm) {
+        if (zztdm === '4') {
+          return false
+        } else {
+          return true
+        }
+      },
+      // 上传供货单据
+      GhSuccess (id, uid) {
+        this.GysbillscVisible = true
+        this.$nextTick(() => {
+          this.$refs.Gysbillsc.init(id, uid)
         })
       },
       // 删除

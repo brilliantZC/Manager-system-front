@@ -6,8 +6,6 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('supply_manage:gywjb:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('supply_manage:gywjb:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -142,9 +140,10 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">详情</el-button>
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">选购</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">确认供货完成</el-button>
+          <el-button type="text" size="small" @click="Gysdetail(scope.row.id)">详情查看</el-button>
+          <el-button type="text" size="small" @click="Gysbuy(scope.row.id)" :disabled="pdhandle(scope.row.zztdm)">选购</el-button>
+          <el-button type="text" size="small" @click="Gyssuccess(scope.row.id)" :disabled="wcpdhandle(scope.row.zztdm)">确认供货完成</el-button>
+          <el-button type="text" size="small" :disabled="wcddpdhandle(scope.row.zztdm)">订单完成</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -157,13 +156,18 @@
       :total="totalPage"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
-    <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+
+    <!-- 弹窗, 详情查看 -->
+     <gysdetail v-if="GysdetailVisible" ref="Gysdetail" @refreshDataList="getDataList"></gysdetail>
+     <gysbuy v-if="GysbuyVisible" ref="Gysbuy" @refreshDataList="getDataList"></gysbuy>
+     <gyssuccess v-if="GyssuccessVisible" ref="Gyssuccess" @refreshDataList="getDataList"></gyssuccess>
   </div>
 </template>
 
 <script>
-  import AddOrUpdate from './gywjb-add-or-update'
+  import Gysdetail from './gysdetail.vue'
+  import Gysbuy from './gysbuy.vue'
+  import Gyssuccess from './gyssuccess.vue'
   export default {
     data () {
       return {
@@ -176,21 +180,27 @@
         totalPage: 0,
         dataListLoading: false,
         dataListSelections: [],
-        addOrUpdateVisible: false
+        GysdetailVisible: false,
+        GysbuyVisible: false,
+        GyssuccessVisible: false
       }
     },
     components: {
-      AddOrUpdate
+      Gysdetail,
+      Gyssuccess,
+      Gysbuy
     },
     activated () {
       this.getDataList()
+      this.pdhandle()
+      this.wcpdhandle()
     },
     methods: {
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/supply_manage/gywjb/list'),
+          url: this.$http.adornUrl('/supply_manage/gywjb/gylist'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
@@ -223,11 +233,47 @@
       selectionChangeHandle (val) {
         this.dataListSelections = val
       },
-      // 新增 / 修改
-      addOrUpdateHandle (id) {
-        this.addOrUpdateVisible = true
+      // 是否可以采购
+      pdhandle (zztdm) {
+        if (zztdm === '1') {
+          return false
+        } else {
+          return true
+        }
+      },
+      wcpdhandle (zztdm) {
+        if (zztdm === '5') {
+          return false
+        } else {
+          return true
+        }
+      },
+      wcddpdhandle (zztdm) {
+        if (zztdm === '6') {
+          return false
+        } else {
+          return true
+        }
+      },
+      // 供应商详情
+      Gysdetail (id) {
+        this.GysdetailVisible = true
         this.$nextTick(() => {
-          this.$refs.addOrUpdate.init(id)
+          this.$refs.Gysdetail.init(id)
+        })
+      },
+      // 管理员选购
+      Gysbuy (id) {
+        this.GysbuyVisible = true
+        this.$nextTick(() => {
+          this.$refs.Gysbuy.init(id)
+        })
+      },
+      // 确认供货完成
+      Gyssuccess (id) {
+        this.GyssuccessVisible = true
+        this.$nextTick(() => {
+          this.$refs.Gyssuccess.init(id)
         })
       },
       // 删除

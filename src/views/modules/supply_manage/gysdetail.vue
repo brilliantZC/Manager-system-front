@@ -1,7 +1,7 @@
 <template>
  <div>
   <el-dialog
-    :title="!dataForm.id ? '新增' : '修改'"
+    :title="!dataForm.id ? '供应详情' : '供应详情'"
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
@@ -72,7 +72,7 @@
         <span style="float:right; position:absolute; left:580px; top:700px;">剩余： {{this.remnant}}字</span>
       </el-collapse-item>
 
-     <el-collapse-item title="相关文件上传" name="3">
+     <el-collapse-item title="相关文件" name="3">
        <el-table
       :data="dataList"
       border
@@ -109,27 +109,22 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="fjuploadHandle(scope.row.wjlxmc, scope.row.wjlxdm)" :disabled="pduploadhandle(scope.row.ztmc)">上传</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.id)" :disabled="pdhandle(scope.row.ztmc)">删除</el-button>
-          <el-button type="text" size="small" @click="downloadHandle(scope.row.wjdz,scope.row.wjmc)" :disabled="pdhandle(scope.row.ztmc)">下载</el-button>
+          <el-button type="text" size="small" @click="downloadHandle(scope.row.wjdz,scope.row.wjmc)">下载</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <span>{{this.dataList}}</span>
      </el-collapse-item>
      </el-collapse>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" @click="dataFormSubmit()">确定</el-button>
+      <el-button type="primary"  @click="visible = false">确定</el-button>
     </span>
   </el-dialog>
-  <Fjupload v-if="fjuploadVisible" ref="fjupload" @tellFatherName="reloaddata" ></Fjupload>
  </div>
 </template>
 
 <script>
-  import Fjupload from './uploadform'
   export default {
     data () {
       return {
@@ -157,9 +152,9 @@
           wjlxmc: '',
           wjlxdm: '',
           zztdm: '',
-          zztmc: ''
+          zztmc: '',
+          uid: 0
         },
-        uid: 0,
         dataList: [],
         dataRule: {
           name: [
@@ -192,16 +187,9 @@
         }
       }
     },
-    components: {
-      Fjupload
-    },
-    activated () {
-      this.pduploadhandle()
-      this.pdhandle()
-    },
     methods: {
       init (id) {
-        this.dataForm.id = id || 0
+        this.dataForm.id = id
         this.visible = true
         this.$nextTick(() => {
           this.$refs['dataForm'].resetFields()
@@ -230,17 +218,18 @@
                 this.dataForm.wjlxdm = data.gywjb.wjlxdm
                 this.dataForm.zztdm = data.gywjb.zztdm
                 this.dataForm.zztmc = data.gywjb.zztmc
+                this.dataForm.uid = data.gywjb.uid
               }
             })
           }
           this.dataListLoading = true
           this.$http({
-            url: this.$http.adornUrl('/supply_manage/wjlxb/fbwjlist'),
+            url: this.$http.adornUrl('/supply_manage/gywjb/list'),
             method: 'get',
             params: this.$http.adornParams({
               'page': this.pageIndex,
               'limit': this.pageSize,
-              'key': this.dataForm.key
+              'key': this.dataForm.uid
             })
           }).then(({data}) => {
             if (data && data.code === 0) {
@@ -254,73 +243,10 @@
           })
         })
       },
-      // 表单提交
-      dataFormSubmit () {
-        this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            this.$http({
-              url: this.$http.adornUrl(`/supply_manage/gywjb/${!this.dataForm.id ? 'save' : 'update'}`),
-              method: 'post',
-              data: this.$http.adornData({
-                'id': this.dataForm.id || undefined,
-                'name': this.dataForm.name,
-                'phone': this.dataForm.phone,
-                'address': this.dataForm.address,
-                'materialName': this.dataForm.materialName,
-                'materialNum': this.dataForm.materialNum,
-                'materialPrice': this.dataForm.materialPrice,
-                'intro': this.dataForm.intro,
-                'ksri': this.dataForm.ksri,
-                'jsrq': this.dataForm.jsrq,
-                'shfs': this.dataForm.shfs,
-                'zztdm': 1,
-                'zztmc': '选购'
-              })
-            }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.$message({
-                  message: '操作成功',
-                  type: 'success',
-                  duration: 1500,
-                  onClose: () => {
-                    this.visible = false
-                    this.$emit('refreshDataList')
-                  }
-                })
-              } else {
-                this.$message.error(data.msg)
-              }
-            })
-          }
-        })
-      },
       // 显示剩余字数
       descInput () {
         var txtVal = this.dataForm.intro.length
         this.remnant = 2000 - txtVal
-      },
-      // 判断当前上传状态
-      pduploadhandle (ztmc) {
-        if (ztmc === '未上传') {
-          return false
-        } else {
-          return true
-        }
-      },
-      // 判断当前上传状态
-      pdhandle (ztmc) {
-        if (ztmc === '未上传') {
-          return true
-        } else {
-          return false
-        }
-      },
-      // 附件上传
-      fjuploadHandle (wjlxmc, wjlxdm) {
-        this.fjuploadVisible = true
-        this.$nextTick(() => {
-          this.$refs.fjupload.initwj(wjlxmc, wjlxdm)
-        })
       },
       downloadHandle (wjdz, wjmc) {
         var mm = wjdz.split('/')
@@ -352,36 +278,6 @@
               navigator.msSaveBlob(blob, ll)
             }
           }
-        })
-      },
-      // 删除
-      deleteHandle (id) {
-        var ids = id ? [id] : this.dataListSelections.map(item => {
-          return item.id
-        })
-        this.$confirm(`确定对该文件进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$http({
-            url: this.$http.adornUrl('/supply_manage/gywjb/delete'),
-            method: 'post',
-            data: this.$http.adornData(ids, false)
-          }).then(({data}) => {
-            if (data && data.code === 0) {
-              this.$message({
-                message: '操作成功',
-                type: 'success',
-                duration: 1500,
-                onClose: () => {
-                  this.reloaddata()
-                }
-              })
-            } else {
-              this.$message.error(data.msg)
-            }
-          })
         })
       },
       // 数据刷新
