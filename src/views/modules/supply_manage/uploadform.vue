@@ -40,11 +40,12 @@
   export default {
     data () {
       return {
-        wjlxmc: '',
+        wjlx: '',
         name: '',
         wjlxdm: '',
         wjmc: '',
         wjdz: '',
+        uid: '',
         response: '',
         file: '',
         url: '',
@@ -56,14 +57,15 @@
       }
     },
     methods: {
-      initwj (wjlxmc, wjlxdm) {
-        this.wjlxmc = wjlxmc
+      initwj (wjlx, wjlxdm, uid) {
+        this.wjlx = wjlx
         this.wjlxdm = wjlxdm
+        this.uid = uid
         this.fileList = []
         this.visible = true
         this.url = this.$http.adornUrl(`/supply_manage/gywjb/bjfiles?token=${this.$cookie.get('token')}`)
         // 上传文件的时候向后台传参
-        this.uploadData = {wjlxmc: this.wjlxmc, wjlxdm: this.wjlxdm}
+        this.uploadData = {wjlx: this.wjlx, wjlxdm: this.wjlxdm, uid: this.uid}
       },
       // 手动上传文件列表
       submitUpload () {
@@ -87,9 +89,9 @@
           data: this.$http.adornData({
             wjmc: this.wjmc,
             wjdz: this.wjdz,
-            wjlxmc: this.wjlxmc,
-            name: this.name,
+            wjlx: this.wjlx,
             wjlxdm: this.wjlxdm,
+            uid: this.uid,
             ztdm: 1
           })
         }).then(({ data }) => {

@@ -80,7 +80,7 @@
       ref="multipleTable"
       style="width: 100%;border-bottom:1px solid rgba(30, 23, 32, 0.38);border-top:1px solid rgba(30, 23, 32, 0.38);border-left:1px solid rgba(30, 23, 32, 0.38);">
       <el-table-column
-        prop="wjlxmc"
+        prop="wjlx"
         header-align="center"
         align="center"
         label="文件类型">
@@ -109,7 +109,7 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="fjuploadHandle(scope.row.wjlxmc, scope.row.wjlxdm)" :disabled="pduploadhandle(scope.row.ztmc)">上传</el-button>
+          <el-button type="text" size="small" @click="fjuploadHandle(scope.row.wjlx, scope.row.wjlxdm, scope.row.uid)" :disabled="pduploadhandle(scope.row.ztmc)">上传</el-button>
           <el-button type="text" size="small" @click="deleteHandle(scope.row.id)" :disabled="pdhandle(scope.row.ztmc)">删除</el-button>
           <el-button type="text" size="small" @click="downloadHandle(scope.row.wjdz,scope.row.wjmc)" :disabled="pdhandle(scope.row.ztmc)">下载</el-button>
         </template>
@@ -246,6 +246,8 @@
             if (data && data.code === 0) {
               this.dataList = data.page.list
               this.totalPage = data.page.totalCount
+              console.log(123)
+              console.log(this.dataList)
             } else {
               this.dataList = []
               this.totalPage = 0
@@ -273,6 +275,7 @@
                 'ksri': this.dataForm.ksri,
                 'jsrq': this.dataForm.jsrq,
                 'shfs': this.dataForm.shfs,
+                'uid': this.uid,
                 'zztdm': 1,
                 'zztmc': '选购'
               })
@@ -316,10 +319,11 @@
         }
       },
       // 附件上传
-      fjuploadHandle (wjlxmc, wjlxdm) {
+      fjuploadHandle (wjlx, wjlxdm, uid) {
+        this.uid = uid
         this.fjuploadVisible = true
         this.$nextTick(() => {
-          this.$refs.fjupload.initwj(wjlxmc, wjlxdm)
+          this.$refs.fjupload.initwj(wjlx, wjlxdm, uid)
         })
       },
       downloadHandle (wjdz, wjmc) {
@@ -392,7 +396,8 @@
           method: 'get',
           params: this.$http.adornParams({
             page: this.pageIndex,
-            limit: this.pageSize
+            limit: this.pageSize,
+            key: this.uid
           })
         }).then(({data}) => {
           if (data && data.code === 0) {
