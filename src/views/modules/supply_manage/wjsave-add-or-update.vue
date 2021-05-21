@@ -4,28 +4,25 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
-    <el-form-item label="" prop="wjlx">
+    <el-form-item label="文件类型" prop="wjlx">
       <el-input v-model="dataForm.wjlx" placeholder=""></el-input>
     </el-form-item>
-    <el-form-item label="" prop="wjdm">
-      <el-input v-model="dataForm.wjdm" placeholder=""></el-input>
-    </el-form-item>
-    <el-form-item label="" prop="wjmc">
+    <el-form-item label="文件名称" prop="wjmc">
       <el-input v-model="dataForm.wjmc" placeholder=""></el-input>
     </el-form-item>
-    <el-form-item label="" prop="wjlxdm">
+    <el-form-item label="文件类型代码" prop="wjlxdm">
       <el-input v-model="dataForm.wjlxdm" placeholder=""></el-input>
     </el-form-item>
-    <el-form-item label="" prop="ztdm">
+    <el-form-item label="状态代码" prop="ztdm">
       <el-input v-model="dataForm.ztdm" placeholder=""></el-input>
     </el-form-item>
-    <el-form-item label="" prop="ztmc">
+    <el-form-item label="状态名称" prop="ztmc">
       <el-input v-model="dataForm.ztmc" placeholder=""></el-input>
     </el-form-item>
-    <el-form-item label="" prop="uid">
+    <el-form-item label="uid" prop="uid">
       <el-input v-model="dataForm.uid" placeholder=""></el-input>
     </el-form-item>
-    <el-form-item label="" prop="wjdz">
+    <el-form-item label="文件地址" prop="wjdz">
       <el-input v-model="dataForm.wjdz" placeholder=""></el-input>
     </el-form-item>
     </el-form>

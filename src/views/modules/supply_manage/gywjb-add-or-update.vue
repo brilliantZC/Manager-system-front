@@ -246,8 +246,6 @@
             if (data && data.code === 0) {
               this.dataList = data.page.list
               this.totalPage = data.page.totalCount
-              console.log(123)
-              console.log(this.dataList)
             } else {
               this.dataList = []
               this.totalPage = 0

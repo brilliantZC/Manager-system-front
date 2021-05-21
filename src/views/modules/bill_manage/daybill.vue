@@ -350,8 +350,7 @@
         this.$nextTick(() => {
           this.$http({
             url: this.$http.adornUrl('/bill_manage/daybill/daybilllist'),
-            method: 'get',
-            params: this.$http.adornParams({})
+            method: 'get'
           }).then(({ data }) => {
             var option = {
               title: {

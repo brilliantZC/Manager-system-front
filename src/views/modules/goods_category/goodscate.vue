@@ -22,11 +22,12 @@
         align="center"
         width="50">
       </el-table-column>
-      <el-table-column
-        prop="id"
-        header-align="center"
-        align="center"
-        label="主键">
+      <el-table-column 
+        header-align="center" 
+        align="center" 
+        width="60" 
+        type="index" 
+        label="序号">
       </el-table-column>
       <el-table-column
         prop="cateName"

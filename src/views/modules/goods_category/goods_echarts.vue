@@ -50,9 +50,8 @@
         this.$nextTick(() => {
           this.$http({
             url: this.$http.adornUrl('/goods_category/goodscate/tblist'),
-            method: 'get',
-            params: this.$http.adornParams({})
-          }).then(({ data }) => {
+            method: 'get'
+          }).then(({data}) => {
             var option = {
               title: {
                 text: '粥铺种类数量图',
@@ -116,8 +115,7 @@
         this.$nextTick(() => {
           this.$http({
             url: this.$http.adornUrl('/goods_category/goodscate/tblist1'),
-            method: 'get',
-            params: this.$http.adornParams({})
+            method: 'get'
           }).then(({ data }) => {
             var option = {
               title: {

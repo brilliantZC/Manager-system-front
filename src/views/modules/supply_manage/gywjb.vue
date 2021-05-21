@@ -258,6 +258,7 @@
         this.$nextTick(() => {
           this.$refs.Gysdetail.init(id)
         })
+        this.getDataList()
       },
       // 确认供货 状态
       ghconfirm (zztdm) {
@@ -289,12 +290,13 @@
         }).then(({data}) => {
           if (data && data.code === 0) {
             this.$message({
-              message: '选购成功',
+              message: '确认订单成功',
               type: 'success',
               duration: 1500,
               onClose: () => {
                 this.GysghVisible = false
                 this.$emit('refreshDataList')
+                this.getDataList()
               }
             })
           } else {
