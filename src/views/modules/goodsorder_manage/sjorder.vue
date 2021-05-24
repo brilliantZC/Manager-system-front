@@ -6,6 +6,7 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
+        <el-button v-if="isAuth('goodsorder_manage:excel')" type="primary" @click="downloadHandle()">导出</el-button>
         <el-button v-if="isAuth('goodsorder_manage:goodsorder:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
@@ -270,30 +271,6 @@
           }
         })
         this.getDataList()
-        /* this.$http({
-          url: this.$http.adornUrl(`/goodsorder_manage/goodsorder/rejectorderinfo/${this.qrjeid}`),
-          method: 'post',
-          params: this.$http.adornData({
-            'intro': this.dataForm.intro
-          })
-        }).then(({data}) => {
-          console.log(this.dataForm.intro)
-          if (data && data.code === 0) {
-            this.$message({
-              message: '确认订单',
-              type: 'success',
-              duration: 1500,
-              onClose: () => {
-                this.QrOrderVisible = false
-                this.$emit('refreshDataList')
-                this.getDataList()
-              }
-            })
-          } else {
-            this.$message.error(data.msg)
-          }
-        })
-        this.getDataList() */
       },
       qrOrderSubmit () {
         this.$http({
@@ -409,6 +386,32 @@
         this.orderDetailVisible = true
         this.$nextTick(() => {
           this.$refs.OrderDetail.initdetail(id)
+        })
+      },
+      // 导出走后台方法
+      downloadHandle () {
+        this.$http({
+          url: this.$http.adornUrl('/goodsorder_manage/excel/order'),
+          method: 'post',
+          responseType: 'arraybuffer',
+          params: this.$http.adornParams({fileName: '历史成功订单信息表.xls'})
+        })
+        .then(({data}) => {
+          if (data) {
+            const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8' })
+            let fileName = '历史成功订单信息表.xls'
+            if ('download' in document.createElement('a')) {
+              let objectUrl = URL.createObjectURL(blob)
+              let downEle = document.createElement('a')
+              downEle.href = objectUrl
+              downEle.setAttribute('download', fileName)
+              document.body.appendChild(downEle)
+              downEle.click()
+            } else {
+              navigator.msSaveBlob(blob, fileName)
+            }
+            this.getDataList()
+          }
         })
       },
       // 删除

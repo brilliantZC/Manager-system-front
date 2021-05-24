@@ -132,7 +132,7 @@
       :visible.sync="ddsdVisible"
       width="30%"
       center>
-      <span>确认接受该订单？</span>
+      <span>确认该订单已送达？</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="ddsdVisible = false">取 消</el-button>
         <el-button type="primary" @click="ddsdSubmit()">确 定</el-button>

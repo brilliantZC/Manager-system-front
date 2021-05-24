@@ -119,7 +119,7 @@
       :visible.sync="fkqrVisible"
       width="30%"
       center>
-      <span>确认接受该订单？</span>
+      <span>确认接单已送达并支付？</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="fkqrVisible = false">取 消</el-button>
         <el-button type="primary" @click="fkqrSubmit()">确 定</el-button>
