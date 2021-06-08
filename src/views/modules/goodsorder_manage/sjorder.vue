@@ -254,7 +254,6 @@
             'key': this.qrjeid
           })
         }).then(({data}) => {
-          console.log(this.dataForm.intro)
           if (data && data.code === 0) {
             this.$message({
               message: '拒绝该订单',

@@ -74,51 +74,50 @@
 
      <el-collapse-item title="相关文件上传" name="3">
        <el-table
-      :data="dataList"
-      border
-      v-loading="dataListLoading"
-      ref="multipleTable"
-      style="width: 100%;border-bottom:1px solid rgba(30, 23, 32, 0.38);border-top:1px solid rgba(30, 23, 32, 0.38);border-left:1px solid rgba(30, 23, 32, 0.38);">
-      <el-table-column
-        prop="wjlx"
-        header-align="center"
-        align="center"
-        label="文件类型">
-      </el-table-column>
-      <el-table-column
-        prop="wjmc"
-        header-align="center"
-        align="center"
-        label="文件名称"
-        width="280">
-      </el-table-column>
-      <el-table-column
-        prop="ztmc"
-        header-align="center"
-        align="center"
-        label="状态">
-         <template slot-scope="scope">
-            <span  v-if="scope.row.ztmc=='未上传'" style="color:red">{{ scope.row.ztmc }}</span>
-            <span v-else style="color: green">{{ scope.row.ztmc }}</span>
-         </template>
-      </el-table-column>
-      <el-table-column
-        fixed="right"
-        header-align="center"
-        align="center"
-        width="150"
-        label="操作">
-        <template slot-scope="scope">
-          <el-button type="text" size="small" @click="fjuploadHandle(scope.row.wjlx, scope.row.wjlxdm, scope.row.uid)" :disabled="pduploadhandle(scope.row.ztmc)">上传</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.id)" :disabled="pdhandle(scope.row.ztmc)">删除</el-button>
-          <el-button type="text" size="small" @click="downloadHandle(scope.row.wjdz,scope.row.wjmc)" :disabled="pdhandle(scope.row.ztmc)">下载</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <span>{{this.dataList}}</span>
-     </el-collapse-item>
-     </el-collapse>
-    </el-form>
+        :data="dataList"
+        border
+        v-loading="dataListLoading"
+        ref="multipleTable"
+        style="width: 100%;border-bottom:1px solid rgba(30, 23, 32, 0.38);border-top:1px solid rgba(30, 23, 32, 0.38);border-left:1px solid rgba(30, 23, 32, 0.38);">
+        <el-table-column
+          prop="wjlx"
+          header-align="center"
+          align="center"
+          label="文件类型">
+        </el-table-column>
+        <el-table-column
+          prop="wjmc"
+          header-align="center"
+          align="center"
+          label="文件名称"
+          width="280">
+        </el-table-column>
+        <el-table-column
+          prop="ztmc"
+          header-align="center"
+          align="center"
+          label="状态">
+          <template slot-scope="scope">
+              <span  v-if="scope.row.ztmc=='未上传'" style="color:red">{{ scope.row.ztmc }}</span>
+              <span v-else style="color: green">{{ scope.row.ztmc }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          fixed="right"
+          header-align="center"
+          align="center"
+          width="150"
+          label="操作">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="fjuploadHandle(scope.row.wjlx, scope.row.wjlxdm, scope.row.uid)" :disabled="pduploadhandle(scope.row.ztmc)">上传</el-button>
+            <el-button type="text" size="small" @click="deleteHandle(scope.row.id)" :disabled="pdhandle(scope.row.ztmc)">删除</el-button>
+            <el-button type="text" size="small" @click="downloadHandle(scope.row.wjdz,scope.row.wjmc)" :disabled="pdhandle(scope.row.ztmc)">下载</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      </el-collapse-item>
+      </el-collapse>
+      </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">取消</el-button>
       <el-button type="primary" @click="dataFormSubmit()">确定</el-button>
