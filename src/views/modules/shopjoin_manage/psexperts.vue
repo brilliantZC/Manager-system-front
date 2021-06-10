@@ -163,8 +163,8 @@
         label="操作">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="JoinDetailHandle(scope.row.id)">详情</el-button>
-          <el-button type="text" size="small" @click="passHandle(scope.row.id)">同意</el-button>
-          <el-button type="text" size="small" @click="nopassHandle(scope.row.id)">不同意</el-button>
+          <el-button type="text" size="small" @click="passHandle(scope.row.id)" :disabled="tpconfirm(scope.row.zztdm)">同意</el-button>
+          <el-button type="text" size="small" @click="nopassHandle(scope.row.id)" :disabled="tpconfirm(scope.row.zztdm)">不同意</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -274,6 +274,13 @@
       selectionChangeHandle (val) {
         this.dataListSelections = val
       },
+      tpconfirm (zztdm) {
+        if (zztdm === 5) {
+          return false
+        } else {
+          return true
+        }
+      },
       passHandle (id) {
         this.passid = id
         this.passVisible = true
@@ -283,10 +290,50 @@
         this.nopassVisible = true
       },
       passSubmit () {
-        this.passVisible = false
+        this.$http({
+          url: this.$http.adornUrl(`/shopjoin_manage/shopjointp/passinfo/${this.passid}`),
+          method: 'post',
+          data: this.$http.adornData()
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '已同意该加盟申请！',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.passVisible = false
+                this.$emit('refreshDataList')
+                this.getDataList()
+              }
+            })
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+        this.getDataList()
       },
       nopassSubmit () {
-        this.nopassVisible = false
+        this.$http({
+          url: this.$http.adornUrl(`/shopjoin_manage/shopjointp/nopassinfo/${this.nopassid}`),
+          method: 'post',
+          data: this.$http.adornData()
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '不同意该加盟申请！',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.passVisible = false
+                this.$emit('refreshDataList')
+                this.getDataList()
+              }
+            })
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+        this.getDataList()
       },
       // 详情展示页
       JoinDetailHandle (id) {

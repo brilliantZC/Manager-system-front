@@ -6,7 +6,6 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('shopjoin_manage:shopjoin:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
         <el-button v-if="isAuth('shopjoin_manage:shopjoin:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
@@ -163,8 +162,9 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
+          <el-button type="text" size="small" @click="JoinDetailHandle(scope.row.id)">详情</el-button>
+          <el-button type="text" size="small" @click="shpassHandle(scope.row.id)" :disabled="shconfirm(scope.row.zztdm)">审核同意</el-button>
+          <el-button type="text" size="small" @click="shnopassHandle(scope.row.id)" :disabled="shconfirm(scope.row.zztdm)">审核不同意</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -177,13 +177,36 @@
       :total="totalPage"
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
-    <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+    <el-dialog
+      title="确定同意该加盟申请"
+      :visible.sync="shpassVisible"
+      width="30%"
+      center>
+      <span>确定同意？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="shpassVisible = false">取 消</el-button>
+        <el-button type="primary" @click="shpassSubmit()">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="确定不同意该加盟申请"
+      :visible.sync="shnopassVisible"
+      width="30%"
+      center>
+      <span>确定不同意？</span>
+      <el-input v-model="finresult" placeholder="请输入驳回原因" type="textarea" :rows="5" style="width:100%;" maxlength="500"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="shnopassVisible = false">取 消</el-button>
+        <el-button type="primary" @click="shnopassSubmit()">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 详情展示页 -->
+    <JoinDetail v-if="detailVisible" ref="JoinDetail" @refreshDataList="getDataList"></JoinDetail>
   </div>
 </template>
 
 <script>
-  import AddOrUpdate from './shopjoin-add-or-update'
+  import JoinDetail from './shopjoindetail'
   export default {
     data () {
       return {
@@ -196,11 +219,17 @@
         totalPage: 0,
         dataListLoading: false,
         dataListSelections: [],
-        addOrUpdateVisible: false
+        addOrUpdateVisible: false,
+        detailVisible: false,
+        shpassVisible: false,
+        shnopassVisible: false,
+        shpassid: 0,
+        shnopassid: 0,
+        finresult: ''
       }
     },
     components: {
-      AddOrUpdate
+      JoinDetail
     },
     activated () {
       this.getDataList()
@@ -243,12 +272,76 @@
       selectionChangeHandle (val) {
         this.dataListSelections = val
       },
-      // 新增 / 修改
-      addOrUpdateHandle (id) {
-        this.addOrUpdateVisible = true
+      // 详情展示页
+      JoinDetailHandle (id) {
+        this.detailVisible = true
         this.$nextTick(() => {
-          this.$refs.addOrUpdate.init(id)
+          this.$refs.JoinDetail.init(id)
         })
+      },
+      shpassHandle (id) {
+        this.shpassid = id
+        this.shpassVisible = true
+      },
+      shnopassHandle (id) {
+        this.shnopassid = id
+        this.shnopassVisible = true
+      },
+      shpassSubmit () {
+        this.$http({
+          url: this.$http.adornUrl(`/shopjoin_manage/shopjoin/shpassinfo/${this.shpassid}`),
+          method: 'post',
+          data: this.$http.adornData()
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '总部审核通过！',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.shpassVisible = false
+                this.$emit('refreshDataList')
+                this.getDataList()
+              }
+            })
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+        this.getDataList()
+      },
+      shnopassSubmit () {
+        this.$http({
+          url: this.$http.adornUrl('/shopjoin_manage/shopjoin/shnopasslist'),
+          method: 'get',
+          params: this.$http.adornParams({
+            'result': this.finresult,
+            'id': this.shnopassid
+          })
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '驳回成功！',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.shnopassVisible = false
+                this.$emit('refreshDataList')
+                this.getDataList()
+              }
+            })
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+        this.getDataList()
+      },
+      shconfirm (zztdm) {
+        if (zztdm === 6) {
+          return false
+        } else {
+          return true
+        }
       },
       // 删除
       deleteHandle (id) {

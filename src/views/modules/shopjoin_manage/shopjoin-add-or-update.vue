@@ -332,7 +332,8 @@
                 'name': this.dataForm.name,
                 'phone': this.dataForm.phone,
                 'address': this.dataForm.address,
-                'money': this.dataForm.money
+                'money': this.dataForm.money,
+                'uid': this.uid
               })
             }).then(({data}) => {
               if (data && data.code === 0) {

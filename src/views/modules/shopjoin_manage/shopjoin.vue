@@ -122,6 +122,7 @@
         label="管理员投票结果">
         <template slot-scope="scope">
             <span  v-if="scope.row.tpResult=='通过'" style="color:green">通过</span>
+            <span v-else-if="scope.row.tpResult=='投票未通过'" style="color: red">{{scope.row.zztmc}}</span>
             <span v-else style="color: red">未投票</span>
         </template>
       </el-table-column>
@@ -132,7 +133,8 @@
         label="最终审核结果">
         <template slot-scope="scope">
             <span  v-if="scope.row.finalResult=='通过'" style="color:green">通过</span>
-            <span v-else style="color: red">未最终审核</span>
+            <span v-else-if="scope.row.finalResult==''" style="color: red">未最终审核</span>
+            <span v-else style="color: red">{{scope.row.finalResult}}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -164,8 +166,9 @@
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)" :disabled="xgconfirm(scope.row.zztdm)">修改</el-button>
           <el-button type="text" size="small" @click="JoinDetailHandle(scope.row.id)">详情</el-button>
-          <el-button type="text" size="small" @click="JoinSubHandle(scope.row.id)" :disabled="xgconfirm(scope.row.zztdm)">提交审核</el-button>
+          <el-button type="text" size="small" @click="JoinSubHandle(scope.row.id)" :disabled="tjsdconfirm(scope.row.zztdm)">提交实地考察</el-button>
           <el-button type="text" size="small" @click="scxdHandle(scope.row.id,scope.row.uid)" :disabled="xdscconfirm(scope.row.zztdm)">上传信贷</el-button>
+           <el-button type="text" size="small" @click="tpshSubHandle(scope.row.id)" :disabled="tjtpconfirm(scope.row.zztdm)">提交投票审核</el-button>
           <el-button type="text" size="small" @click="deleteHandle(scope.row.id)" :disabled="xgconfirm(scope.row.zztdm)">删除</el-button>
         </template>
       </el-table-column>
@@ -180,7 +183,7 @@
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
     <el-dialog
-      title="确定提交加盟审核"
+      title="确定提交实地考察"
       :visible.sync="jmsqVisible"
       width="30%"
       center>
@@ -188,6 +191,17 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="jmsqVisible = false">取 消</el-button>
         <el-button type="primary" @click="jmsqSubmit()">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="确定提交加盟审核"
+      :visible.sync="tpshVisible"
+      width="30%"
+      center>
+      <span>确认填写信息无误，并提交投票审核？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="tpshVisible = false">取 消</el-button>
+        <el-button type="primary" @click="tpshSubmit()">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 弹窗, 新增 / 修改 -->
@@ -219,7 +233,9 @@
         detailVisible: false,
         jmsqVisible: false,
         jmsqid: 0,
-        joinxdVisible: false
+        joinxdVisible: false,
+        tpshVisible: false,
+        tpshid: 0
       }
     },
     components: {
@@ -283,7 +299,21 @@
         })
       },
       xgconfirm (zztdm) {
+        if (zztdm === 1 | zztdm === 4) {
+          return false
+        } else {
+          return true
+        }
+      },
+      tjsdconfirm (zztdm) {
         if (zztdm === 1) {
+          return false
+        } else {
+          return true
+        }
+      },
+      tjtpconfirm (zztdm) {
+        if (zztdm === 4) {
           return false
         } else {
           return true
@@ -313,6 +343,33 @@
               duration: 1500,
               onClose: () => {
                 this.jmsqVisible = false
+                this.$emit('refreshDataList')
+                this.getDataList()
+              }
+            })
+          } else {
+            this.$message.error(data.msg)
+          }
+        })
+        this.getDataList()
+      },
+      tpshSubHandle (id) {
+        this.tpshid = id
+        this.tpshVisible = true
+      },
+      tpshSubmit () {
+        this.$http({
+          url: this.$http.adornUrl(`/shopjoin_manage/shopjoin/tpshinfo/${this.tpshid}`),
+          method: 'post',
+          data: this.$http.adornData()
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.$message({
+              message: '已提交！',
+              type: 'success',
+              duration: 1500,
+              onClose: () => {
+                this.tpshVisible = false
                 this.$emit('refreshDataList')
                 this.getDataList()
               }
